@@ -6,6 +6,7 @@ const PAGE_TITLES = {
   '/lessons':   'Lessons',
   '/community': 'Community',
   '/ai-coach':  'AI Coach',
+  '/settings':  'Settings',
 }
 
 export default function TopBar({ onMenuClick }) {

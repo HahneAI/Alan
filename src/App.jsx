@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage'
 import LessonsPage   from './pages/LessonsPage'
 import CommunityPage from './pages/CommunityPage'
 import AICoachPage   from './pages/AICoachPage'
+import SettingsPage  from './pages/SettingsPage'
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth()
@@ -37,6 +38,7 @@ function AppRoutes() {
         <Route path="/lessons"   element={<LessonsPage   />} />
         <Route path="/community" element={<CommunityPage />} />
         <Route path="/ai-coach"  element={<AICoachPage   />} />
+        <Route path="/settings"  element={<SettingsPage  />} />
       </Route>
 
       {/* Default */}
