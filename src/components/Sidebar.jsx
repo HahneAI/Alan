@@ -13,7 +13,7 @@ const NAV_MAIN = [
 export default function Sidebar({ open, onClose }) {
   const { user, profile, signOut } = useAuth()
   const navigate  = useNavigate()
-  const isAdmin   = profile?.is_admin || profile?.is_owner
+  const isAdmin   = profile?.is_admin === true
 
   const nav = [
     ...NAV_MAIN,

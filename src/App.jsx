@@ -26,7 +26,7 @@ function PublicRoute({ children }) {
 function AdminRoute({ children }) {
   const { profile, profileLoaded } = useAuth()
   if (!profileLoaded) return null
-  return (profile?.is_admin || profile?.is_owner)
+  return profile?.is_admin
     ? children
     : <Navigate to="/dashboard" replace />
 }
