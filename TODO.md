@@ -42,27 +42,56 @@ feature isn't ready.
     session", "Give me a drill", "What should I work on today?"
 
 ### 0.5 Messages
-- [ ] Add `/messages` to sidebar nav with a placeholder unread badge (hardcoded `3`)
-- [ ] Shell layout: two-panel (conversation list left, empty right panel with "Select
-      a conversation" empty state)
-- [ ] "Coming Soon" banner across the compose area and conversation list
+- [ ] Add `/messages` to sidebar nav with a hardcoded unread badge (`3`) to show
+      the pattern
+- [ ] Shell layout: two-panel side-by-side on desktop, single-panel (list) on mobile
+  - Left rail: 3–4 hardcoded conversation rows — avatar initial, name, last
+    message preview (truncated), relative timestamp, unread dot on one row
+  - Right panel: "Select a conversation to start reading" empty state with a
+    faded envelope icon
+- [ ] "New Message" button in the rail header — disabled, "Coming Soon" tooltip
+- [ ] "Coming Soon" banner pinned above the conversation list
 
-### 0.6 Practice (Media Hub)
-- [ ] Add `/practice` to sidebar nav
-- [ ] Shell: upload zone (greyed out, "Coming Soon" overlay) + empty submissions list
-      with a single placeholder card showing a mock analysis report preview
+### 0.6 Admin Panel
+- [ ] Add `/admin` route — only renders for `is_owner` or `is_admin`; all other
+      users are silently redirected to `/dashboard`
+- [ ] Sidebar: admin link appears at the bottom of the nav (above Settings) only
+      when the current user has an admin or owner role; shield icon; no "Coming
+      Soon" badge (it either shows or it doesn't)
+- [ ] `/admin` shell — horizontal sub-nav tabs: Users · Courses · Community · Stats
+- [ ] **Users tab** — searchable table shell:
+  - Hardcoded 4–5 rows: avatar initial, full name, email, role badges (Student /
+    Coach / Admin chips), joined date, a "Edit" icon button
+  - Search input at the top (static, no filtering yet)
+  - Pagination row at the bottom (Previous / 1 / Next — disabled)
+- [ ] **Users · Edit drawer** — slide-in panel (or modal) with placeholder fields:
+  display name, email (read-only), role toggle switches (`is_coach`, `is_admin`),
+  DM permission toggle (`dm_enabled`); all controls disabled with "Coming Soon"
+  tooltip; "Save" button present but inert
+- [ ] **Courses tab** — placeholder list:
+  - 2–3 hardcoded course rows: title, lesson count, "Published" green dot or
+    "Draft" grey dot, a drag-handle icon, an "Edit" icon button
+  - "New Course" button — disabled, "Coming Soon" tooltip
+- [ ] **Community tab** — placeholder moderation queue:
+  - Empty state card: "No flagged posts" with a checkmark icon
+  - Note below: "Reported posts from students will appear here"
+- [ ] **Stats tab** — platform metric cards shell:
+  - 4 cards: Total Students, Lessons Completed This Week, AI Conversations,
+    New Signups — all showing `—` with the same shimmer skeleton pattern as the
+    Dashboard stats
 
-### 0.7 Sessions (Live Coaching)
-- [ ] Add `/sessions` to sidebar nav
-- [ ] Shell: upcoming sessions empty state with a "No sessions scheduled" card and
-      a disabled "Schedule Session" button (coach-only, shown with "Coming Soon" tooltip
-      for students)
-
-### 0.8 Sidebar & Global Chrome
-- [ ] Add a small "Coming Soon" dot/badge next to Lessons, Community, AI Coach,
-      Messages, Practice, and Sessions nav links — remove each as the feature goes live
-- [ ] Show the user's avatar image (if set) in the sidebar user strip instead of
-      always rendering initials
+### 0.7 Sidebar & Global Chrome
+- [ ] Add "Coming Soon" dot badges next to Lessons, Community, AI Coach, and
+      Messages in the sidebar nav — remove each dot as the feature ships
+- [ ] Show the user's avatar image (from Settings → Profile upload) in the sidebar
+      user strip when one exists; fall back to initials when not set
+- [ ] Mobile bottom tab bar — fixed to the bottom of the screen on viewports below
+      1024 px; tabs: Dashboard, Lessons, AI Coach, Community, Messages; active tab
+      highlighted; replaces the hamburger slide-in on mobile (slide-in remains for
+      Settings and Admin access)
+- [ ] Notification bell icon in the sidebar footer (above the user strip) —
+      hardcoded red dot badge; opens an empty "No notifications yet" dropdown panel;
+      "Coming Soon" label inside the panel
 
 ---
 
