@@ -79,6 +79,13 @@ as $$
 declare
   caller_is_owner boolean;
 begin
+  -- auth.uid() is NULL in the Supabase SQL editor and any service-role
+  -- context (no user JWT present). Allow those updates through so an admin
+  -- can bootstrap or manually correct flags without hitting this guard.
+  if auth.uid() is null then
+    return new;
+  end if;
+
   select is_owner into caller_is_owner
   from public.profiles
   where id = auth.uid();
@@ -154,10 +161,10 @@ create policy "profiles: owner update any"
 
 
 -- -----------------------------------------------------------------
--- 7. Grant Alan's account owner status
---    Run this AFTER Alan has signed up so his profile row exists.
---    Replace the email with Alan's actual address.
+-- 7. Bootstrap role flags
+--    Run these in the Supabase SQL editor AFTER both accounts exist.
+--    The guard_role_flags trigger allows NULL auth.uid() sessions
+--    (SQL editor / service role) so these updates go through cleanly.
 -- -----------------------------------------------------------------
--- update public.profiles
--- set is_owner = true
--- where email = 'alan@yourdomain.com';
+-- update public.profiles set is_owner = true where email = 'alan@yourdomain.com';
+-- update public.profiles set is_admin = true where email = 'you@yourdomain.com';
