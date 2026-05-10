@@ -8,21 +8,21 @@ section gets actual layout structure plus a "Coming Soon" badge where the live
 feature isn't ready.
 
 ### 0.1 Dashboard
-- [ ] Replace `—` stat values with skeleton shimmer loaders (animate-pulse bars)
-- [ ] Add a "streak" stat card: flame icon, number, "day streak" label
-- [ ] Add a hero "resume" banner — large card with the in-progress lesson title, a
+- [x] Replace `—` stat values with skeleton shimmer loaders (animate-pulse bars)
+- [x] Add a "streak" stat card: flame icon, number, "day streak" label
+- [x] Add a hero "resume" banner — large card with the in-progress lesson title, a
       progress bar (visual only, static for now), and a "Continue" button
-- [ ] Add a "Recent activity" section: list of 3–4 placeholder rows (icon + label +
+- [x] Add a "Recent activity" section: list of 3–4 placeholder rows (icon + label +
       relative time) with skeleton shimmer while loading
 
 ### 0.2 Lessons
-- [ ] Replace the blank card with a proper course-catalog shell:
+- [x] Replace the blank card with a proper course-catalog shell:
   - Section header "Your courses" with a course-count badge
   - 3–4 mock course cards each with: cover gradient, title, "X of Y lessons",
     progress bar, and a "Coming Soon" pill badge overlaid on locked cards
   - A "New" badge on one card for visual variety
-- [ ] Add a tab row: "All · In Progress · Completed" (static, no filtering yet)
-- [ ] Sidebar or top filter chips: topics or difficulty (static)
+- [x] Add a tab row: "All · In Progress · Completed" (static, no filtering yet)
+- [x] Sidebar or top filter chips: topics or difficulty (static)
 
 ### 0.3 Community
 - [ ] Replace the blank card with a feed shell:
