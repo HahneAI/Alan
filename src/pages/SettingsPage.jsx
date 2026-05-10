@@ -44,8 +44,8 @@ function Banner({ status }) {
 
 function CardShell({ title, children }) {
   return (
-    <div className="bg-white border border-slate-100 rounded-xl shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b border-slate-100">
+    <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+      <div className="px-6 py-5 border-b border-slate-100">
         <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
       </div>
       {children}
@@ -55,7 +55,7 @@ function CardShell({ title, children }) {
 
 function SaveRow({ loading, disabled, label = 'Save changes', note }) {
   return (
-    <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-3">
+    <div className="px-6 py-5 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-3">
       {note && <p className="text-xs text-slate-400 hidden sm:block">{note}</p>}
       <button
         type="submit"
@@ -508,10 +508,10 @@ export default function SettingsPage() {
   }, [user?.id])
 
   return (
-    <div className="max-w-lg space-y-6">
+    <div className="max-w-lg space-y-8">
       <div>
         <h2 className="text-2xl font-bold tracking-tight text-slate-900">Settings</h2>
-        <p className="text-sm text-slate-500 mt-1">Manage your profile, phone, and security.</p>
+        <p className="text-sm text-slate-500 mt-1.5">Manage your profile, phone, and security.</p>
       </div>
 
       <ProfileCard user={user} profileLoading={profileLoading} />

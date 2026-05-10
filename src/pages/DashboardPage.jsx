@@ -35,8 +35,8 @@ const ACTIVITY = [
 
 function StatShimmer({ label }) {
   return (
-    <div className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm">
-      <div className="h-7 w-10 bg-slate-200 animate-pulse rounded mb-2" />
+    <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+      <div className="h-7 w-10 bg-slate-200 animate-pulse rounded mb-2.5" />
       <p className="text-xs text-slate-500 leading-snug">{label}</p>
     </div>
   )
@@ -47,33 +47,33 @@ export default function DashboardPage() {
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] ?? 'there'
 
   return (
-    <div className="max-w-4xl space-y-8">
+    <div className="max-w-4xl space-y-10">
       {/* Welcome */}
       <div>
         <h2 className="text-2xl font-bold tracking-tight text-slate-900">
           Welcome back, {firstName}
         </h2>
-        <p className="text-sm text-slate-500 mt-1">Here&apos;s what&apos;s happening in your studio.</p>
+        <p className="text-sm text-slate-500 mt-1.5">Here&apos;s what&apos;s happening in your studio.</p>
       </div>
 
       {/* Resume banner */}
-      <div className="bg-white border border-slate-100 rounded-xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center gap-4">
-        <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+      <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center gap-5">
+        <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
           <BookOpen size={20} strokeWidth={1.75} aria-hidden="true" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-0.5">
+          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
             Continue where you left off
           </p>
           <p className="text-sm font-semibold text-slate-900 truncate">Module 2 · Vocal Confidence</p>
-          <div className="mt-2 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+          <div className="mt-2.5 h-1.5 bg-slate-100 rounded-full overflow-hidden">
             <div className="h-full w-[62%] bg-blue-500 rounded-full" />
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">62% complete</p>
+          <p className="text-[11px] text-slate-400 mt-1.5">62% complete</p>
         </div>
         <Link
           to="/lessons"
-          className="shrink-0 inline-flex items-center bg-slate-900 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors duration-150"
+          className="shrink-0 inline-flex items-center bg-slate-900 text-white text-sm font-medium px-5 py-2.5 rounded-xl hover:bg-slate-700 transition-colors duration-150"
         >
           Continue
         </Link>
@@ -81,14 +81,14 @@ export default function DashboardPage() {
 
       {/* Stats */}
       <div>
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Your progress</p>
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-          <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 shadow-sm">
-            <div className="flex items-center gap-1.5">
+        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Your progress</p>
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5 shadow-sm">
+            <div className="flex items-center gap-2">
               <Flame size={18} className="text-amber-500 shrink-0" aria-hidden="true" />
               <p className="text-2xl font-bold text-slate-900">7</p>
             </div>
-            <p className="text-xs text-slate-500 mt-1 leading-snug">Day streak</p>
+            <p className="text-xs text-slate-500 mt-2 leading-snug">Day streak</p>
           </div>
           <StatShimmer label="Lessons completed" />
           <StatShimmer label="Practice sessions" />
@@ -99,10 +99,10 @@ export default function DashboardPage() {
 
       {/* Recent activity */}
       <div>
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Recent activity</p>
-        <div className="bg-white border border-slate-100 rounded-xl shadow-sm divide-y divide-slate-50">
+        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Recent activity</p>
+        <div className="bg-white border border-slate-100 rounded-2xl shadow-sm divide-y divide-slate-50">
           {ACTIVITY.map(({ icon: Icon, color, label, time }) => (
-            <div key={label} className="flex items-center gap-3 px-4 py-3">
+            <div key={label} className="flex items-center gap-4 px-5 py-4">
               <Icon size={15} strokeWidth={1.75} className={`${color} shrink-0`} aria-hidden="true" />
               <p className="text-sm text-slate-700 flex-1 min-w-0 truncate">{label}</p>
               <p className="text-xs text-slate-400 shrink-0">{time}</p>
@@ -113,22 +113,22 @@ export default function DashboardPage() {
 
       {/* Quick links */}
       <div>
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
           Quick access
         </p>
-        <div className="grid sm:grid-cols-3 gap-3">
+        <div className="grid sm:grid-cols-3 gap-4">
           {QUICK_LINKS.map(({ icon: Icon, label, description, to, accent }) => (
             <Link
               key={to}
               to={to}
-              className="flex items-start gap-3.5 bg-white border border-slate-100 rounded-xl p-4 shadow-sm hover:border-slate-300 transition-colors duration-150"
+              className="flex items-start gap-4 bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:border-slate-300 transition-colors duration-150"
             >
-              <div className={`w-9 h-9 rounded-lg ${accent} flex items-center justify-center shrink-0`}>
+              <div className={`w-10 h-10 rounded-xl ${accent} flex items-center justify-center shrink-0`}>
                 <Icon size={18} strokeWidth={1.75} aria-hidden="true" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-slate-900">{label}</p>
-                <p className="text-xs text-slate-500 mt-0.5 leading-snug">{description}</p>
+                <p className="text-xs text-slate-500 mt-1 leading-snug">{description}</p>
               </div>
             </Link>
           ))}

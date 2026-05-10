@@ -6,14 +6,12 @@ import TopBar from '../components/TopBar'
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  // Close sidebar on resize to desktop
   useEffect(() => {
     const onResize = () => { if (window.innerWidth >= 1024) setSidebarOpen(false) }
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
-  // Lock body scroll when mobile sidebar is open
   useEffect(() => {
     document.body.classList.toggle('menu-open', sidebarOpen)
     return () => document.body.classList.remove('menu-open')
@@ -21,7 +19,6 @@ export default function AppLayout() {
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
-      {/* Mobile backdrop */}
       {sidebarOpen && (
         <div
           aria-hidden="true"
@@ -34,7 +31,12 @@ export default function AppLayout() {
 
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <TopBar onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        {/*
+          page-pb-safe adds safe-area-inset-bottom on top of the responsive
+          padding so content is never hidden behind the home indicator on
+          iPhone 17 and other edge-to-edge devices.
+        */}
+        <main className="flex-1 overflow-y-auto p-6 sm:p-8 lg:p-10 page-pb-safe">
           <Outlet />
         </main>
       </div>

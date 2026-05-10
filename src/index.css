@@ -17,7 +17,6 @@ body {
 /* Lock scroll when mobile menu is open */
 body.menu-open {
   overflow: hidden;
-  /* Compensate for scrollbar width to prevent layout shift */
   padding-right: var(--scrollbar-width, 0px);
 }
 
@@ -26,4 +25,35 @@ body.menu-open {
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+/* ── Safe-area utilities (Dynamic Island, home indicator, landscape notch) ── */
+/*
+   viewport-fit=cover is set in index.html so the app renders edge-to-edge.
+   These utilities pull content away from the device's unsafe regions using
+   CSS environment variables. They live in @layer utilities so Tailwind
+   responsive variants can still compose with them.
+*/
+@layer utilities {
+  .pt-safe { padding-top:    env(safe-area-inset-top,    0px); }
+  .pr-safe { padding-right:  env(safe-area-inset-right,  0px); }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .pl-safe { padding-left:   env(safe-area-inset-left,   0px); }
+}
+
+/*
+   Responsive page-content bottom padding.
+   Written outside @layer so it wins over Tailwind's pb-* utilities.
+   The calc() adds the design-token amount to the home-indicator inset so
+   content is never hidden on iPhone with Dynamic Island or home indicator.
+   Breakpoints match the main scroll area's p-6 / sm:p-8 / lg:p-10.
+*/
+.page-pb-safe {
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 640px) {
+  .page-pb-safe { padding-bottom: calc(2rem   + env(safe-area-inset-bottom, 0px)); }
+}
+@media (min-width: 1024px) {
+  .page-pb-safe { padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px)); }
 }

@@ -53,21 +53,21 @@ export default function LessonsPage() {
   const [activeFilter, setActiveFilter] = useState('All topics')
 
   return (
-    <div className="max-w-4xl space-y-6">
+    <div className="max-w-4xl space-y-8">
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold tracking-tight text-slate-900">Lessons</h2>
-        <p className="text-sm text-slate-500 mt-1">Your curriculum</p>
+        <p className="text-sm text-slate-500 mt-1.5">Your curriculum</p>
       </div>
 
-      {/* Tabs */}
+      {/* Tabs — py-3 = 44px touch target */}
       <div className="flex gap-1 border-b border-slate-200">
         {TABS.map((tab) => (
           <button
             key={tab}
             type="button"
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors duration-150 ${
+            className={`px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors duration-150 ${
               activeTab === tab
                 ? 'border-slate-900 text-slate-900'
                 : 'border-transparent text-slate-500 hover:text-slate-700'
@@ -85,7 +85,7 @@ export default function LessonsPage() {
             key={chip}
             type="button"
             onClick={() => setActiveFilter(chip)}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors duration-150 ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors duration-150 ${
               activeFilter === chip
                 ? 'bg-slate-900 text-white'
                 : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-400'
@@ -98,54 +98,54 @@ export default function LessonsPage() {
 
       {/* Course catalog */}
       <div>
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-5">
           <p className="text-sm font-semibold text-slate-700">Your courses</p>
           <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
             {COURSES.length}
           </span>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-2 gap-5">
           {COURSES.map((course) => {
             const pct = Math.round((course.completed / course.total) * 100)
             return (
               <div
                 key={course.id}
-                className={`bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm ${
+                className={`bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm ${
                   course.locked ? 'opacity-75' : ''
                 }`}
               >
                 {/* Cover */}
-                <div className={`h-28 bg-gradient-to-br ${course.gradient} relative`}>
+                <div className={`h-32 bg-gradient-to-br ${course.gradient} relative`}>
                   {course.locked && (
                     <div className="absolute inset-0 bg-slate-900/25 flex items-center justify-center">
-                      <Lock size={20} strokeWidth={1.75} className="text-white/80" aria-hidden="true" />
+                      <Lock size={22} strokeWidth={1.75} className="text-white/80" aria-hidden="true" />
                     </div>
                   )}
                   {course.badge === 'new' && (
-                    <span className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wide bg-white text-blue-600 px-2 py-0.5 rounded-full shadow-sm">
+                    <span className="absolute top-3.5 right-3.5 text-[10px] font-bold uppercase tracking-wide bg-white text-blue-600 px-2 py-0.5 rounded-full shadow-sm">
                       New
                     </span>
                   )}
                   {course.badge === 'coming-soon' && (
-                    <span className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wide bg-slate-900/60 text-white px-2 py-0.5 rounded-full">
+                    <span className="absolute top-3.5 right-3.5 text-[10px] font-bold uppercase tracking-wide bg-slate-900/60 text-white px-2 py-0.5 rounded-full">
                       Coming Soon
                     </span>
                   )}
                 </div>
 
                 {/* Body */}
-                <div className="p-4">
+                <div className="p-5">
                   <p className="text-sm font-semibold text-slate-900 leading-tight">{course.title}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">{course.subtitle}</p>
-                  <div className="mt-3">
+                  <p className="text-xs text-slate-500 mt-1">{course.subtitle}</p>
+                  <div className="mt-4">
                     <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-blue-500 rounded-full"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-1">
+                    <p className="text-[11px] text-slate-400 mt-1.5">
                       {course.completed} of {course.total} lessons
                     </p>
                   </div>
