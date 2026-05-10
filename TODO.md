@@ -41,9 +41,26 @@ feature isn't ready.
   - Suggested-prompt chips below the input (disabled): e.g. "Review my last
     session", "Give me a drill", "What should I work on today?"
 
-### 0.5 Sidebar & Global Chrome
-- [ ] Add a small "Coming Soon" dot/badge next to Lessons, Community, and AI Coach
-      nav links in the Sidebar — remove each as the feature goes live
+### 0.5 Messages
+- [ ] Add `/messages` to sidebar nav with a placeholder unread badge (hardcoded `3`)
+- [ ] Shell layout: two-panel (conversation list left, empty right panel with "Select
+      a conversation" empty state)
+- [ ] "Coming Soon" banner across the compose area and conversation list
+
+### 0.6 Practice (Media Hub)
+- [ ] Add `/practice` to sidebar nav
+- [ ] Shell: upload zone (greyed out, "Coming Soon" overlay) + empty submissions list
+      with a single placeholder card showing a mock analysis report preview
+
+### 0.7 Sessions (Live Coaching)
+- [ ] Add `/sessions` to sidebar nav
+- [ ] Shell: upcoming sessions empty state with a "No sessions scheduled" card and
+      a disabled "Schedule Session" button (coach-only, shown with "Coming Soon" tooltip
+      for students)
+
+### 0.8 Sidebar & Global Chrome
+- [ ] Add a small "Coming Soon" dot/badge next to Lessons, Community, AI Coach,
+      Messages, Practice, and Sessions nav links — remove each as the feature goes live
 - [ ] Show the user's avatar image (if set) in the sidebar user strip instead of
       always rendering initials
 
@@ -185,7 +202,8 @@ feature isn't ready.
 - [ ] `/admin/users` — searchable table of all profiles; columns: name, email,
       role flags, joined date; click row to view profile
 - [ ] `/admin/users/:id` — view/edit user profile; toggle `is_coach` / `is_admin`
-      flags (owner only for admin flag)
+      flags (owner only for admin flag); toggle `dm_enabled` with confirmation modal;
+      assign student to a coaching cohort
 - [ ] `/admin/courses` — list of courses with publish/unpublish toggle, reorder
       drag handles, "New course" button
 - [ ] `/admin/courses/:id` — course editor: title, description, cover image upload,
@@ -218,3 +236,320 @@ feature isn't ready.
 - [ ] **Mobile bottom nav** — on small screens, replace the slide-in sidebar with
       a fixed bottom tab bar (Dashboard, Lessons, AI Coach, Community) for
       thumb-friendly navigation
+
+---
+
+## Phase 7 · Direct Messaging
+
+**Goal:** Private 1:1 messaging between students, gated by an explicit permission
+flag that only admin and owner can grant. No student can DM by default.
+
+### Permission Model
+- [ ] Add `dm_enabled boolean default false` to the `profiles` table
+- [ ] RLS rule: a user can only initiate or receive DMs if their `dm_enabled` flag
+      is `true`; no exceptions — even if both parties are students the flag must be
+      set on both sides
+- [ ] Admin/owner toggle — expose the flag in `/admin/users/:id` with a clear label
+      ("Allow direct messaging") and a confirmation step before enabling
+- [ ] Owner can grant DM permission to coaches independently of the student flag
+- [ ] Audit log — record who enabled DM for whom and when (`dm_permission_log`
+      table: granter_id, grantee_id, granted_at, revoked_at)
+
+### Database
+- [ ] `dm_conversations` — id, created_at, last_message_at
+- [ ] `dm_participants` — conversation_id, user_id, unread_count (updated by
+      trigger); composite PK on (conversation_id, user_id)
+- [ ] `dm_messages` — id, conversation_id, sender_id, body, created_at, read_at
+      (nullable)
+- [ ] RLS: only participants of a conversation can read its messages; only the
+      sender can insert; admin/owner can read any conversation for moderation
+- [ ] Trigger: on new `dm_messages` insert, update `dm_conversations.last_message_at`
+      and increment recipient's `unread_count` in `dm_participants`
+- [ ] Trigger: mark `dm_messages.read_at` when the recipient views the thread;
+      reset their `unread_count` to 0
+
+### API / Data Layer
+- [ ] `useConversations()` — fetch user's conversations ordered by
+      `last_message_at` desc, joined with participant profiles
+- [ ] `useMessages(conversationId)` — paginated fetch, subscribe to Supabase
+      Realtime for new messages
+- [ ] `startConversation(recipientId)` — check both parties have `dm_enabled`;
+      create conversation + two participant rows; return conversationId
+- [ ] `sendMessage(conversationId, body)` — insert + optimistic UI
+- [ ] `markRead(conversationId)` — update read_at and reset unread_count
+
+### UI
+- [ ] Add `/messages` to router and sidebar nav (with unread count badge that
+      updates in real time via Supabase Realtime)
+- [ ] `/messages` — two-panel layout:
+  - Left rail: conversation list — avatar, name, last message preview (truncated),
+    relative timestamp, unread dot
+  - Right panel: message thread — bubbles (sent right / received left), sender
+    name + avatar above each group, relative timestamps
+  - Empty state when no conversations: "No messages yet"
+- [ ] "New Message" button — opens a modal with a searchable user list (only
+      `dm_enabled` users shown); selecting one starts or opens the conversation
+- [ ] Input bar — textarea, send on Enter, Shift+Enter for newline, character limit
+      (2000), disable while sending
+- [ ] Real-time delivery — new messages appear instantly without a page refresh
+- [ ] Unread badge on the `/messages` nav item; clears when thread is opened
+- [ ] Message timestamps show on hover
+
+### Admin / Moderation
+- [ ] `/admin/messages` — search interface: look up conversations by participant
+      name; read-only view of any thread for moderation purposes
+- [ ] "Disable DM" action from the moderation view — flips the flag off and
+      shows an in-app notice to the affected user
+- [ ] Flag/report button on messages (student-facing) → creates a row in an
+      `dm_reports` table for admin review
+
+---
+
+## Phase 8 · Media Hub — Video & Audio Upload with AI Analysis
+
+**Goal:** The analytical engine of the platform. Students upload recordings of
+speeches, presentations, or practice sessions and receive deep AI-powered
+feedback. This is the core differentiator — treat it as the product's heartbeat.
+
+### Integration Strategy (in order)
+
+**Tier 1 — Yoodli (ship first)**
+Yoodli provides the richest out-of-the-box speech analysis: pacing, filler words,
+eye contact, facial expression confidence, body language, tone, and energy. Check
+for developer/enterprise API access at yoodli.ai before building any custom
+analysis. If a REST API or webhook pipeline is available, integrate it as the
+primary analysis provider for both video and audio submissions. Store the raw
+Yoodli JSON response in `media_analysis.analysis_json` so every field is
+available for display without re-processing.
+
+**Tier 2 — Deepgram / OpenAI Whisper (transcription fallback)**
+If Yoodli API is not yet available or is unavailable for a given file type, use
+Deepgram (real-time streaming, speaker diarization, word-level timestamps) or
+OpenAI Whisper (batch, highest accuracy) for transcription only. Pair with
+Claude to generate coaching feedback from the transcript text.
+
+**Tier 3 — Custom Claude pipeline (future)**
+Once Tier 1/2 are running, add a Supabase Edge Function that sends the transcript
++ Yoodli metrics JSON to Claude claude-sonnet-4-6 with a coaching persona system
+prompt. Claude writes a personalized paragraph of feedback that synthesises all
+signals into actionable coaching language.
+
+### Database
+- [ ] `media_submissions` — id, user_id, type (`video` | `audio`), storage_path,
+      file_size_bytes, duration_seconds, title, context_note (student's description
+      of what they were practicing), submitted_at, status
+      (`pending` | `processing` | `ready` | `failed`)
+- [ ] `media_transcripts` — id, submission_id, full_text, word_timestamps_json
+      (array of `{ word, start_ms, end_ms }`), provider, created_at
+- [ ] `media_analysis` — id, submission_id, provider (`yoodli` | `deepgram` |
+      `whisper` | `claude`), analysis_json (JSONB), coaching_summary (text,
+      Claude-generated), created_at
+- [ ] RLS: students read/write only their own submissions; coaches and admins read
+      all; owner reads all; no student reads another student's submission
+- [ ] Supabase Storage bucket `media` — max 500 MB video, 50 MB audio; accepted
+      types: video/mp4, video/webm, video/mov, audio/mp3, audio/wav, audio/m4a,
+      audio/ogg; path: `{user_id}/{submission_id}.{ext}`
+
+### Backend / Edge Functions
+- [ ] `process-media` Edge Function — triggered by a Supabase Storage webhook on
+      new upload; orchestrates:
+  1. Update `media_submissions.status` to `processing`
+  2. Call Yoodli API with the media URL (or upload); await result
+  3. If Yoodli unavailable, fall back to Deepgram/Whisper for transcript
+  4. Insert rows into `media_transcripts` and `media_analysis`
+  5. Call Claude with transcript + metrics to generate `coaching_summary`
+  6. Update `media_submissions.status` to `ready` (or `failed` with error)
+  7. Send Supabase Realtime event so the UI updates without polling
+- [ ] `get-analysis-report` Edge Function — formats raw `analysis_json` into a
+      normalised report shape regardless of which provider produced it; allows
+      the UI to stay provider-agnostic
+- [ ] Yoodli API client module — encapsulates auth, upload, polling/webhook, and
+      response normalisation; swap provider without touching the Edge Function
+      orchestrator
+
+### UI — Upload Flow
+- [ ] Add `/practice` to router and sidebar nav (replace or sub-section of AI Coach)
+- [ ] `/practice` — two tabs at top: "Upload" and "My Submissions"
+- [ ] Upload tab:
+  - Drag-and-drop zone with video/audio file type icons; click to browse
+  - File type + size validation before upload begins (show friendly error if
+    exceeded)
+  - Title field (required) + "What were you practicing?" textarea (optional
+    context sent to AI)
+  - Duration preview after file is selected (HTML5 media element metadata)
+  - Chunked upload progress bar (Supabase resumable upload API for large files)
+  - After submit: card switches to "Processing…" state with animated spinner;
+    Supabase Realtime updates the card to "Ready" when analysis completes
+
+### UI — Submissions List
+- [ ] `/practice` (My Submissions tab) — chronological list of cards:
+  - Thumbnail (video poster frame or audio waveform placeholder icon)
+  - Title, type badge (Video / Audio), duration, submission date
+  - Status badge: Processing (spinner) / Ready (green) / Failed (red + retry)
+  - Click → analysis report
+
+### UI — Analysis Report
+- [ ] `/practice/:submissionId` — full-width report page:
+  - **Header** — title, date, duration, type; "Share with Coach" button (sends
+    a notification to the assigned coach)
+  - **Transcript panel** — scrollable, word-level timestamps highlighted as audio
+    plays; filler words highlighted in amber; if video, panel syncs to playhead
+  - **Metrics dashboard** (visible for both audio and video):
+    - Pacing gauge — words per minute vs. ideal range (120–160 wpm)
+    - Filler word counter — total count + breakdown list ("um: 12, uh: 5, like: 8")
+    - Energy/tone graph — line chart over time (high / medium / low)
+    - Conciseness score (percentage of filler-free sentences)
+  - **Video-only metrics**:
+    - Eye contact percentage — donut chart
+    - Facial expression confidence score + brief timeline
+    - Body language summary (posture, hand gesture frequency)
+  - **Coaching summary** — Claude-generated paragraph in a styled card; quoted
+    coaching language, not dry metrics
+  - **Replay panel** — video/audio player synchronized with the transcript;
+    coach can add timestamped comments (stored in `media_comments` table)
+  - Coach view: all of the above plus a "Write feedback" textarea that saves
+    to `media_analysis.coach_note`
+
+### Admin
+- [ ] `/admin/practice` — all submissions across all students; filter by user,
+      date, type, status
+- [ ] Coach dashboard section — "Submissions awaiting review" queue: submissions
+      where `coach_note` is null, sorted by submission date
+
+---
+
+## Phase 9 · Live Video Coaching — Sessions with Real-Time AI Analysis
+
+**Goal:** The classroom. Coach-hosted group video sessions where students can
+practice live, receive real-time AI feedback visible to the whole class, and
+leave with a full transcript and per-presenter analysis report.
+
+### Infrastructure
+
+**Recommended stack:** Daily.co for video/audio transport and built-in
+transcription webhooks, paired with Deepgram streaming for word-level real-time
+transcription when a student is in Presentation Mode. Daily.co handles the
+WebRTC complexity and has a JavaScript SDK that works cleanly in React.
+
+Later: swap the transport layer for LiveKit (self-hosted) once the AI pipeline
+is proven, to reduce third-party costs at scale.
+
+### Session Types
+1. **1:1 Coaching** — coach + one student; private room; always records
+2. **Group Session (Class)** — coach + cohort; broadcast mode (students muted
+   by default); Presentation Mode available; records and stores per-presenter
+   analysis
+
+### Database
+- [ ] `coaching_sessions` — id, host_id (coach/owner), title, session_type
+      (`one_on_one` | `group`), daily_room_name, daily_room_url, scheduled_at,
+      started_at, ended_at, recording_url, is_cancelled
+- [ ] `session_invites` — session_id, user_id, invited_at, accepted_at (student
+      RSVP)
+- [ ] `session_participants` — session_id, user_id, joined_at, left_at, daily_participant_id
+- [ ] `hand_queue` — session_id, user_id, raised_at, granted_at, dismissed_at;
+      represents the mic/presentation request queue
+- [ ] `session_presentations` — id, session_id, presenter_id, started_at,
+      ended_at, transcript (text), analysis_json (JSONB), coaching_summary (text),
+      feedback_shared_with_class (bool)
+- [ ] `session_chat_messages` — id, session_id, user_id, body, created_at (in-room
+      text chat)
+- [ ] RLS: session participants read the session they joined; coach reads and
+      writes everything in their sessions; owner reads all
+
+### Backend / Edge Functions
+- [ ] `create-daily-room` Edge Function — called when coach creates a session;
+      calls Daily.co REST API to provision a private room with recording enabled;
+      stores room name + URL in `coaching_sessions`; sends invite notifications
+      to invited users
+- [ ] `end-daily-room` Edge Function — called when coach ends session; calls
+      Daily.co to close the room; fetches recording URL; triggers
+      `process-session-recording` asynchronously
+- [ ] `process-session-recording` Edge Function — after session ends:
+  1. Download or reference the Daily.co recording
+  2. For each presenter in `session_presentations`, extract their audio segment
+  3. Send to Yoodli or Deepgram for full analysis
+  4. Generate Claude coaching summary per presenter
+  5. Update `session_presentations` with all results
+  6. Mark session as `ready` so the recap page activates
+- [ ] `presentation-realtime-hook` Edge Function (or Deepgram streaming client
+      in the browser) — while a student is in Presentation Mode, stream audio to
+      Deepgram; push partial transcripts + rolling metrics to Supabase Realtime
+      channel `session:{id}:presenter:{userId}`; coach UI subscribes and shows
+      live metrics sidebar
+- [ ] Daily.co webhook handler — receives transcription events and recording-ready
+      events; routes to appropriate processing functions
+
+### UI — Session Management
+- [ ] Add `/sessions` to router and sidebar nav
+- [ ] `/sessions` — upcoming sessions list (cards with title, date/time, type,
+      participant count, "Join" or "View recap" CTA) + past sessions below
+- [ ] `/sessions/new` — coach/admin only; form: title, type selector, date/time
+      picker, invite students (searchable multi-select from user list), optional
+      description; submits → creates Daily.co room + DB row + sends invites
+- [ ] Student invite notification — in-app notification + email (Supabase email
+      trigger) with session title, time, and "Accept" link
+- [ ] `/sessions/:id` (pre-join) — session detail: title, host, participants,
+      countdown timer, "Join session" button (active 5 min before scheduled time)
+
+### UI — Live Room (`/sessions/:id/live`)
+- [ ] **Video grid** — Daily.co Prebuilt or custom using `@daily-co/daily-js`:
+  - Coach tile always pinned top-left or full-width in spotlight
+  - Student tiles in a responsive grid (up to ~16 visible at once)
+  - Muted indicator overlays on each tile
+- [ ] **Sidebar (togglable on mobile)**:
+  - Participants list — name, mic/camera status, hand-raised indicator
+  - Hand queue section (coach-visible only) — ordered list of raised hands with
+    "Grant mic" and "Dismiss" buttons
+  - Session chat — messages appear in real time via Supabase Realtime
+- [ ] **Coach controls bar** (bottom, coach-only):
+  - Mute all / unmute all toggle
+  - Record toggle (shows red dot + elapsed time when recording)
+  - End session button (with confirmation)
+  - Spotlight a participant
+- [ ] **Student controls bar** (bottom, student-only):
+  - Raise hand button — inserts into `hand_queue`; button state changes to
+    "Waiting…" with cancel option; pulses when hand is raised
+  - Camera on/off (own camera only)
+  - Leave session
+- [ ] **Presentation Mode** (activates when coach grants mic to a student):
+  - Student's tile expands to spotlight / full-width for the class
+  - Student sees: "You're presenting — the AI is listening" banner + their own
+    live metrics panel (pacing indicator, filler word counter, eye contact dot)
+  - Class sees: the presenter's video spotlighted; a subtle "AI Feedback" panel
+    slides in at the bottom of the presenter's tile showing live pacing bar +
+    filler word count
+  - Coach sees: full live metrics sidebar — pacing gauge, filler words, tone
+    line (updating every ~5 s), rolling transcript stream
+  - When coach ends presentation: AI feedback card posts to the session chat
+    visible to the whole class — overall score, top 3 observations, one coaching
+    tip; framed as encouragement not criticism
+- [ ] **Class feedback card** — styled card in the session chat feed:
+  - Presenter name + "just finished presenting"
+  - Score badge (e.g. 84 / 100) if Yoodli provides a score
+  - 3 bullet observations (e.g. "Great energy throughout", "7 filler words —
+    aim for under 5", "Eye contact was strong")
+  - One coaching tip in italics
+  - "Full report available after session" note
+
+### UI — Session Recap (`/sessions/:id/recap`)
+- [ ] Unlocks after `coaching_sessions.ended_at` is set and processing completes
+- [ ] Recording player — full session recording with chapter markers per presenter
+- [ ] Presenter analysis cards — one expandable card per student who presented:
+  - Name, presentation duration, overall score
+  - Pacing, filler words, eye contact, tone metrics (same layout as Phase 8
+    analysis report)
+  - Full transcript with filler words highlighted
+  - Claude coaching summary
+- [ ] Session chat transcript — full log of chat messages with timestamps
+- [ ] Coach's notes — editable textarea (coach/owner only); saves to
+      `coaching_sessions.coach_notes`
+- [ ] "Download report" — PDF export of a student's own analysis card (browser
+      `window.print()` on a styled print layout)
+
+### Admin
+- [ ] `/admin/sessions` — all sessions; filter by coach, date range, type;
+      columns: title, host, participant count, duration, recording status
+- [ ] Coach view — coaches see only sessions they host; same list but scoped
+- [ ] Session cancel action — soft-cancel (`is_cancelled = true`) + sends
+      cancellation notification to all invited participants
