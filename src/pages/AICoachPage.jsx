@@ -30,7 +30,7 @@ const CAPABILITIES = [
   {
     icon: BarChart2,
     title: 'Progress analysis',
-    description: 'Alan AI tracks your trends across sessions and highlights what's improving.',
+    description: "Alan AI tracks your trends across sessions and highlights what's improving.",
   },
   {
     icon: Repeat2,

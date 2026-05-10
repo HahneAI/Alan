@@ -46,7 +46,7 @@ export default defineConfig({
       },
       workbox: {
         // Precache all static assets built by Vite
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        globPatterns: ['**/*.{js,css,html,svg}'],
         // Cache-first for static assets, network-first for API/Supabase calls
         runtimeCaching: [
           {
