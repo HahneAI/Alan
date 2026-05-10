@@ -81,15 +81,15 @@ feature isn't ready.
     Dashboard stats
 
 ### 0.7 Sidebar & Global Chrome
-- [ ] Add "Coming Soon" dot badges next to Lessons, Community, AI Coach, and
+- [x] Add "Coming Soon" dot badges next to Lessons, Community, AI Coach, and
       Messages in the sidebar nav — remove each dot as the feature ships
-- [ ] Show the user's avatar image (from Settings → Profile upload) in the sidebar
+- [x] Show the user's avatar image (from Settings → Profile upload) in the sidebar
       user strip when one exists; fall back to initials when not set
-- [ ] Mobile bottom tab bar — fixed to the bottom of the screen on viewports below
+- [x] Mobile bottom tab bar — fixed to the bottom of the screen on viewports below
       1024 px; tabs: Dashboard, Lessons, AI Coach, Community, Messages; active tab
       highlighted; replaces the hamburger slide-in on mobile (slide-in remains for
       Settings and Admin access)
-- [ ] Notification bell icon in the sidebar footer (above the user strip) —
+- [x] Notification bell icon in the sidebar footer (above the user strip) —
       hardcoded red dot badge; opens an empty "No notifications yet" dropdown panel;
       "Coming Soon" label inside the panel
 
