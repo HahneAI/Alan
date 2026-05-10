@@ -25,15 +25,15 @@ feature isn't ready.
 - [x] Sidebar or top filter chips: topics or difficulty (static)
 
 ### 0.3 Community
-- [ ] Replace the blank card with a feed shell:
+- [x] Replace the blank card with a feed shell:
   - Compose box at the top (disabled input, "Coming Soon" tooltip on focus)
   - 3–4 mock post cards: avatar initial, name, relative timestamp, body text,
     like/comment counts — all hardcoded
   - A "Members online" sidebar chip (static number)
-- [ ] "Coming Soon" banner across the compose box and post interactions
+- [x] "Coming Soon" banner across the compose box and post interactions
 
 ### 0.4 AI Coach
-- [ ] Replace the blank card with a chat-UI shell:
+- [x] Replace the blank card with a chat-UI shell:
   - Message thread area with 2–3 hardcoded example exchanges (user bubble +
     Alan AI bubble) to show the conversation pattern
   - Disabled input bar at the bottom with placeholder "Ask Alan AI…"
