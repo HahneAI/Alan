@@ -19,7 +19,7 @@ export default function AppLayout() {
   }, [sidebarOpen])
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-dvh bg-slate-50 overflow-hidden">
       {sidebarOpen && (
         <div
           aria-hidden="true"
