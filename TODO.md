@@ -42,40 +42,40 @@ feature isn't ready.
     session", "Give me a drill", "What should I work on today?"
 
 ### 0.5 Messages
-- [ ] Add `/messages` to sidebar nav with a hardcoded unread badge (`3`) to show
+- [x] Add `/messages` to sidebar nav with a hardcoded unread badge (`3`) to show
       the pattern
-- [ ] Shell layout: two-panel side-by-side on desktop, single-panel (list) on mobile
+- [x] Shell layout: two-panel side-by-side on desktop, single-panel (list) on mobile
   - Left rail: 3–4 hardcoded conversation rows — avatar initial, name, last
     message preview (truncated), relative timestamp, unread dot on one row
   - Right panel: "Select a conversation to start reading" empty state with a
     faded envelope icon
-- [ ] "New Message" button in the rail header — disabled, "Coming Soon" tooltip
-- [ ] "Coming Soon" banner pinned above the conversation list
+- [x] "New Message" button in the rail header — disabled, "Coming Soon" tooltip
+- [x] "Coming Soon" banner pinned above the conversation list
 
 ### 0.6 Admin Panel
-- [ ] Add `/admin` route — only renders for `is_owner` or `is_admin`; all other
+- [x] Add `/admin` route — only renders for `is_owner` or `is_admin`; all other
       users are silently redirected to `/dashboard`
-- [ ] Sidebar: admin link appears at the bottom of the nav (above Settings) only
+- [x] Sidebar: admin link appears at the bottom of the nav (above Settings) only
       when the current user has an admin or owner role; shield icon; no "Coming
       Soon" badge (it either shows or it doesn't)
-- [ ] `/admin` shell — horizontal sub-nav tabs: Users · Courses · Community · Stats
-- [ ] **Users tab** — searchable table shell:
+- [x] `/admin` shell — horizontal sub-nav tabs: Users · Courses · Community · Stats
+- [x] **Users tab** — searchable table shell:
   - Hardcoded 4–5 rows: avatar initial, full name, email, role badges (Student /
     Coach / Admin chips), joined date, a "Edit" icon button
   - Search input at the top (static, no filtering yet)
   - Pagination row at the bottom (Previous / 1 / Next — disabled)
-- [ ] **Users · Edit drawer** — slide-in panel (or modal) with placeholder fields:
+- [x] **Users · Edit drawer** — slide-in panel (or modal) with placeholder fields:
   display name, email (read-only), role toggle switches (`is_coach`, `is_admin`),
   DM permission toggle (`dm_enabled`); all controls disabled with "Coming Soon"
   tooltip; "Save" button present but inert
-- [ ] **Courses tab** — placeholder list:
+- [x] **Courses tab** — placeholder list:
   - 2–3 hardcoded course rows: title, lesson count, "Published" green dot or
     "Draft" grey dot, a drag-handle icon, an "Edit" icon button
   - "New Course" button — disabled, "Coming Soon" tooltip
-- [ ] **Community tab** — placeholder moderation queue:
+- [x] **Community tab** — placeholder moderation queue:
   - Empty state card: "No flagged posts" with a checkmark icon
   - Note below: "Reported posts from students will appear here"
-- [ ] **Stats tab** — platform metric cards shell:
+- [x] **Stats tab** — platform metric cards shell:
   - 4 cards: Total Students, Lessons Completed This Week, AI Conversations,
     New Signups — all showing `—` with the same shimmer skeleton pattern as the
     Dashboard stats

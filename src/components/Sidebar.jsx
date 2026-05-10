@@ -1,18 +1,25 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, BookOpen, Users, Sparkles, Settings, LogOut } from 'lucide-react'
+import { LayoutDashboard, BookOpen, Users, Sparkles, Mail, Shield, Settings, LogOut } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
-const NAV = [
+const NAV_MAIN = [
   { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard' },
   { icon: BookOpen,        label: 'Lessons',   to: '/lessons'   },
   { icon: Users,           label: 'Community', to: '/community' },
   { icon: Sparkles,        label: 'AI Coach',  to: '/ai-coach'  },
-  { icon: Settings,        label: 'Settings',  to: '/settings'  },
+  { icon: Mail,            label: 'Messages',  to: '/messages', badge: 3 },
 ]
 
 export default function Sidebar({ open, onClose }) {
-  const { user, signOut } = useAuth()
-  const navigate = useNavigate()
+  const { user, profile, signOut } = useAuth()
+  const navigate  = useNavigate()
+  const isAdmin   = profile?.is_admin || profile?.is_owner
+
+  const nav = [
+    ...NAV_MAIN,
+    ...(isAdmin ? [{ icon: Shield, label: 'Admin', to: '/admin' }] : []),
+    { icon: Settings, label: 'Settings', to: '/settings' },
+  ]
 
   const handleSignOut = async () => {
     await signOut()
@@ -48,7 +55,7 @@ export default function Sidebar({ open, onClose }) {
 
       {/* Navigation — py-3 gives each link a 44px+ touch target */}
       <nav className="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto" aria-label="App navigation">
-        {NAV.map(({ icon: Icon, label, to }) => (
+        {nav.map(({ icon: Icon, label, to, badge }) => (
           <NavLink
             key={to}
             to={to}
@@ -62,7 +69,12 @@ export default function Sidebar({ open, onClose }) {
             }
           >
             <Icon size={17} strokeWidth={1.75} aria-hidden="true" />
-            {label}
+            <span className="flex-1">{label}</span>
+            {badge != null && (
+              <span className="text-[10px] font-bold bg-blue-500 text-white w-4 h-4 rounded-full flex items-center justify-center leading-none">
+                {badge}
+              </span>
+            )}
           </NavLink>
         ))}
       </nav>
