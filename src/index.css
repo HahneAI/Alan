@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+/* Smooth scrolling — respects reduced-motion preference */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Prevent horizontal overflow on all viewports */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Lock scroll when mobile menu is open */
+body.menu-open {
+  overflow: hidden;
+  /* Compensate for scrollbar width to prevent layout shift */
+  padding-right: var(--scrollbar-width, 0px);
+}
+
+/* Consistent box model */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
