@@ -119,22 +119,27 @@ anywhere content must not hide behind a device chrome element.
 ### `page-pb-safe` — Responsive Bottom Padding
 
 Written **outside** `@layer` in `index.css` so it wins over Tailwind's `pb-*`
-utilities in the cascade. It matches the three breakpoints of the main scroll
-area's padding:
+utilities in the cascade. On mobile and tablet it adds the `BottomTabBar`
+height (4rem = 64px) so content never hides behind it. At desktop the tab bar
+disappears, so only the designed padding + safe area applies:
 
 ```css
+/* mobile — p-6 + tab bar (4rem) + home indicator */
 .page-pb-safe {
-  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px)); /* p-6 */
+  padding-bottom: calc(1.5rem + 4rem + env(safe-area-inset-bottom, 0px));
 }
+/* tablet — p-8 + tab bar + home indicator */
 @media (min-width: 640px) {
-  .page-pb-safe { padding-bottom: calc(2rem   + env(safe-area-inset-bottom, 0px)); } /* sm:p-8 */
+  .page-pb-safe { padding-bottom: calc(2rem + 4rem + env(safe-area-inset-bottom, 0px)); }
 }
+/* desktop — p-10 + home indicator only (no tab bar) */
 @media (min-width: 1024px) {
-  .page-pb-safe { padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px)); } /* lg:p-10 */
+  .page-pb-safe { padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px)); }
 }
 ```
 
-If you change the main content padding breakpoints, update these values too.
+If you change the main content padding breakpoints, update the rem amounts here
+too. If you change the `BottomTabBar` height away from `h-16`, update the `4rem`.
 
 ---
 

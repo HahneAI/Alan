@@ -44,15 +44,22 @@ body.menu-open {
 /*
    Responsive page-content bottom padding.
    Written outside @layer so it wins over Tailwind's pb-* utilities.
-   The calc() adds the design-token amount to the home-indicator inset so
-   content is never hidden on iPhone with Dynamic Island or home indicator.
-   Breakpoints match the main scroll area's p-6 / sm:p-8 / lg:p-10.
+
+   Mobile / tablet (< 1024px): adds the bottom tab bar height (4rem = 64px)
+   on top of the designed padding AND the home-indicator safe area so content
+   is never hidden behind the BottomTabBar or the iPhone home indicator.
+
+   Desktop (≥ 1024px): tab bar is gone (lg:hidden), so only the designed
+   padding + safe area applies.
+
+   Breakpoints mirror the main scroll area's p-6 / sm:p-8 / lg:p-10.
+   If those values change, update the rem amounts below to match.
 */
 .page-pb-safe {
-  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(1.5rem + 4rem + env(safe-area-inset-bottom, 0px));
 }
 @media (min-width: 640px) {
-  .page-pb-safe { padding-bottom: calc(2rem   + env(safe-area-inset-bottom, 0px)); }
+  .page-pb-safe { padding-bottom: calc(2rem   + 4rem + env(safe-area-inset-bottom, 0px)); }
 }
 @media (min-width: 1024px) {
   .page-pb-safe { padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px)); }
