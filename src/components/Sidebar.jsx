@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, BookOpen, Users, Sparkles, LogOut } from 'lucide-react'
+import { LayoutDashboard, BookOpen, Users, Sparkles, Settings, LogOut } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const NAV = [
@@ -7,6 +7,7 @@ const NAV = [
   { icon: BookOpen,        label: 'Lessons',   to: '/lessons'   },
   { icon: Users,           label: 'Community', to: '/community' },
   { icon: Sparkles,        label: 'AI Coach',  to: '/ai-coach'  },
+  { icon: Settings,        label: 'Settings',  to: '/settings'  },
 ]
 
 export default function Sidebar({ open, onClose }) {

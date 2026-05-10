@@ -6,7 +6,10 @@ import SignupPage    from './pages/SignupPage'
 import DashboardPage from './pages/DashboardPage'
 import LessonsPage   from './pages/LessonsPage'
 import CommunityPage from './pages/CommunityPage'
-import AICoachPage   from './pages/AICoachPage'
+import AICoachPage          from './pages/AICoachPage'
+import SettingsPage         from './pages/SettingsPage'
+import ForgotPasswordPage   from './pages/ForgotPasswordPage'
+import ResetPasswordPage    from './pages/ResetPasswordPage'
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth()
@@ -22,8 +25,11 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Public */}
-      <Route path="/login"  element={<PublicRoute><LoginPage  /></PublicRoute>} />
-      <Route path="/signup" element={<PublicRoute><SignupPage /></PublicRoute>} />
+      <Route path="/login"           element={<PublicRoute><LoginPage          /></PublicRoute>} />
+      <Route path="/signup"          element={<PublicRoute><SignupPage         /></PublicRoute>} />
+      <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
+      {/* Reset password: must be open — user arrives from email with no session yet */}
+      <Route path="/reset-password"  element={<ResetPasswordPage />} />
 
       {/* Protected — share the sidebar layout */}
       <Route
@@ -37,6 +43,7 @@ function AppRoutes() {
         <Route path="/lessons"   element={<LessonsPage   />} />
         <Route path="/community" element={<CommunityPage />} />
         <Route path="/ai-coach"  element={<AICoachPage   />} />
+        <Route path="/settings"  element={<SettingsPage  />} />
       </Route>
 
       {/* Default */}
