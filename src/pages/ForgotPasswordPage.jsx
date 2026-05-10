@@ -1,7 +1,13 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Mail, Phone } from 'lucide-react'
+import { ArrowLeft, Mail, Phone, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+
+// ─────────────────────────────────────────────────────────────────
+// Set to true once Twilio is configured in Supabase.
+// See docs/phone-auth-setup.md for the full checklist.
+// ─────────────────────────────────────────────────────────────────
+const PHONE_RESET_ENABLED = false
 
 const INPUT_CLS =
   'w-full px-3 py-2 text-sm border border-slate-200 rounded-lg outline-none ' +
@@ -17,27 +23,88 @@ function normalizePhone(raw) {
   return digits.startsWith('+') ? digits : `+${digits}`
 }
 
+// ── WIP modal ─────────────────────────────────────────────────────
+
+function WipModal({ onClose }) {
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="wip-title"
+      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+    >
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      {/* Card */}
+      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-xs p-6 text-center space-y-4">
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+        >
+          <X size={15} />
+        </button>
+
+        <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center mx-auto">
+          <Phone size={18} className="text-amber-500" />
+        </div>
+
+        <div className="space-y-1">
+          <p id="wip-title" className="text-sm font-semibold text-slate-900">
+            SMS reset coming soon
+          </p>
+          <p className="text-sm text-slate-500 leading-relaxed">
+            Phone-based password reset is still being set up. In the meantime,
+            use your email address to reset your password.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="w-full py-2 rounded-lg bg-slate-900 text-white text-sm font-medium hover:bg-slate-700 transition-colors duration-150"
+        >
+          Got it
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // ── Step components ───────────────────────────────────────────────
 
 function MethodPicker({ method, onChange }) {
   return (
     <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-lg">
       {[
-        { value: 'email', icon: Mail,  label: 'Email'  },
-        { value: 'phone', icon: Phone, label: 'Phone'  },
-      ].map(({ value, icon: Icon, label }) => (
+        { value: 'email', icon: Mail,  label: 'Email'                           },
+        { value: 'phone', icon: Phone, label: 'Phone', soon: !PHONE_RESET_ENABLED },
+      ].map(({ value, icon: Icon, label, soon }) => (
         <button
           key={value}
           type="button"
           onClick={() => onChange(value)}
-          className={`flex items-center justify-center gap-1.5 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${
-            method === value
-              ? 'bg-white text-slate-900 shadow-sm'
-              : 'text-slate-500 hover:text-slate-700'
+          className={`relative flex items-center justify-center gap-1.5 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${
+            soon
+              ? 'text-slate-400 cursor-pointer'
+              : method === value
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'
           }`}
         >
           <Icon size={14} aria-hidden="true" />
           {label}
+          {soon && (
+            <span className="ml-1 text-[10px] font-semibold uppercase tracking-wide bg-slate-200 text-slate-400 px-1.5 py-0.5 rounded-full leading-none">
+              Soon
+            </span>
+          )}
         </button>
       ))}
     </div>
@@ -47,11 +114,12 @@ function MethodPicker({ method, onChange }) {
 // ── Main page ─────────────────────────────────────────────────────
 
 export default function ForgotPasswordPage() {
-  const [method, setMethod]   = useState('email')
-  const [email, setEmail]     = useState('')
-  const [phone, setPhone]     = useState('')
+  const [method, setMethod]     = useState('email')
+  const [showWip, setShowWip]   = useState(false)
+  const [email, setEmail]       = useState('')
+  const [phone, setPhone]       = useState('')
   // phone flow keeps the normalized number for subsequent steps
-  const [pending, setPending] = useState('')
+  const [pending, setPending]   = useState('')
   const [otp, setOtp]         = useState('')
   const [newPw, setNewPw]     = useState('')
   const [confirmPw, setConfirmPw] = useState('')
@@ -126,6 +194,7 @@ export default function ForgotPasswordPage() {
   // ── Shared shell ──────────────────────────────────────────────────
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+      {showWip && <WipModal onClose={() => setShowWip(false)} />}
       <div className="w-full max-w-sm">
 
         {/* Logo */}
@@ -169,7 +238,14 @@ export default function ForgotPasswordPage() {
         {/* ── input step ── */}
         {step === 'input' && (
           <form onSubmit={handleSend} className="bg-white border border-slate-200 rounded-xl shadow-sm p-6 space-y-4">
-            <MethodPicker method={method} onChange={(m) => { setMethod(m); setError(null) }} />
+            <MethodPicker
+              method={method}
+              onChange={(m) => {
+                if (m === 'phone' && !PHONE_RESET_ENABLED) { setShowWip(true); return }
+                setMethod(m)
+                setError(null)
+              }}
+            />
 
             {error && (
               <p role="alert" className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
