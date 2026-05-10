@@ -33,23 +33,28 @@ export default function Sidebar({ open, onClose }) {
         ${open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}
     >
+      {/*
+        pt-safe: logo row clears the Dynamic Island on edge-to-edge devices.
+        pb-safe: user strip clears the home indicator bar at the bottom.
+      */}
+
       {/* Logo */}
-      <div className="flex items-center gap-2 h-16 px-5 border-b border-white/10 shrink-0">
+      <div className="flex items-center gap-2 px-5 border-b border-white/10 shrink-0 pt-safe" style={{ minHeight: 'calc(4rem + env(safe-area-inset-top, 0px))' }}>
         <span className="text-base font-semibold tracking-tight">Alan</span>
         <span className="text-[11px] font-medium text-slate-400 bg-white/10 px-1.5 py-0.5 rounded mt-px">
           Studio
         </span>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto" aria-label="App navigation">
+      {/* Navigation — py-3 gives each link a 44px+ touch target */}
+      <nav className="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto" aria-label="App navigation">
         {NAV.map(({ icon: Icon, label, to }) => (
           <NavLink
             key={to}
             to={to}
             onClick={onClose}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150 ${
+              `flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-colors duration-150 ${
                 isActive
                   ? 'bg-white/10 text-white'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
@@ -62,10 +67,10 @@ export default function Sidebar({ open, onClose }) {
         ))}
       </nav>
 
-      {/* User strip */}
-      <div className="px-3 py-3 border-t border-white/10 shrink-0 space-y-0.5">
-        <div className="flex items-center gap-3 px-3 py-2 rounded-lg">
-          <div className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center text-xs font-semibold shrink-0">
+      {/* User strip — pb-safe clears the home indicator */}
+      <div className="px-3 py-3 border-t border-white/10 shrink-0 space-y-0.5 pb-safe">
+        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl">
+          <div className="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center text-xs font-semibold shrink-0">
             {initials}
           </div>
           <div className="min-w-0 flex-1">
@@ -76,10 +81,11 @@ export default function Sidebar({ open, onClose }) {
           </div>
         </div>
 
+        {/* py-3 = 44px touch target */}
         <button
           type="button"
           onClick={handleSignOut}
-          className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-white/5 transition-colors duration-150"
+          className="flex items-center gap-3 w-full px-3 py-3 rounded-xl text-sm text-slate-400 hover:text-white hover:bg-white/5 active:bg-white/10 transition-colors duration-150"
         >
           <LogOut size={17} strokeWidth={1.75} aria-hidden="true" />
           Sign out

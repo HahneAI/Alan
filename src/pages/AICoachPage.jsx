@@ -23,11 +23,11 @@ const PROMPTS = ['Review my last session', 'Give me a drill', 'What should I wor
 
 function AIBubble({ text }) {
   return (
-    <div className="flex items-start gap-2.5">
-      <div className="w-6 h-6 rounded-full bg-violet-100 flex items-center justify-center shrink-0 mt-0.5">
-        <Sparkles size={12} strokeWidth={1.75} className="text-violet-600" aria-hidden="true" />
+    <div className="flex items-start gap-3">
+      <div className="w-7 h-7 rounded-full bg-violet-100 flex items-center justify-center shrink-0 mt-0.5">
+        <Sparkles size={13} strokeWidth={1.75} className="text-violet-600" aria-hidden="true" />
       </div>
-      <div className="max-w-[80%] bg-slate-50 border border-slate-100 text-slate-700 text-sm leading-relaxed px-4 py-2.5 rounded-2xl rounded-tl-sm">
+      <div className="max-w-[80%] bg-slate-50 border border-slate-100 text-slate-700 text-sm leading-relaxed px-4 py-3 rounded-2xl rounded-tl-sm">
         {text}
       </div>
     </div>
@@ -37,7 +37,7 @@ function AIBubble({ text }) {
 function UserBubble({ text }) {
   return (
     <div className="flex justify-end">
-      <div className="max-w-[80%] bg-slate-900 text-white text-sm leading-relaxed px-4 py-2.5 rounded-2xl rounded-tr-sm">
+      <div className="max-w-[80%] bg-slate-900 text-white text-sm leading-relaxed px-4 py-3 rounded-2xl rounded-tr-sm">
         {text}
       </div>
     </div>
@@ -46,21 +46,21 @@ function UserBubble({ text }) {
 
 export default function AICoachPage() {
   return (
-    <div className="max-w-4xl space-y-4">
+    <div className="max-w-4xl space-y-6">
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold tracking-tight text-slate-900">AI Coach</h2>
-        <p className="text-sm text-slate-500 mt-1">Practice with Alan&apos;s AI</p>
+        <p className="text-sm text-slate-500 mt-1.5">Practice with Alan&apos;s AI</p>
       </div>
 
       {/* Chat window */}
-      <div className="bg-white border border-slate-100 rounded-xl shadow-sm flex flex-col overflow-hidden">
+      <div className="bg-white border border-slate-100 rounded-2xl shadow-sm flex flex-col overflow-hidden">
 
-        {/* Chat header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
-              <Sparkles size={14} strokeWidth={1.75} className="text-violet-600" aria-hidden="true" />
+        {/* Chat header — min-h-[44px] for the touch zone */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
+              <Sparkles size={15} strokeWidth={1.75} className="text-violet-600" aria-hidden="true" />
             </div>
             <p className="text-sm font-semibold text-slate-900">Alan AI</p>
           </div>
@@ -70,7 +70,7 @@ export default function AICoachPage() {
         </div>
 
         {/* Message thread */}
-        <div className="flex flex-col gap-4 p-4 h-96 overflow-y-auto">
+        <div className="flex flex-col gap-5 p-5 h-96 overflow-y-auto">
           {MESSAGES.map((msg, i) =>
             msg.role === 'user'
               ? <UserBubble key={i} text={msg.text} />
@@ -79,8 +79,8 @@ export default function AICoachPage() {
         </div>
 
         {/* Suggested prompts */}
-        <div className="px-4 py-3 border-t border-slate-100">
-          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Suggested</p>
+        <div className="px-5 py-4 border-t border-slate-100">
+          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-3">Suggested</p>
           <div className="flex flex-wrap gap-2">
             {PROMPTS.map((prompt) => (
               <button
@@ -88,7 +88,7 @@ export default function AICoachPage() {
                 type="button"
                 disabled
                 title="Coming soon"
-                className="text-xs text-slate-500 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-full cursor-not-allowed"
+                className="text-xs text-slate-500 bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-full cursor-not-allowed"
               >
                 {prompt}
               </button>
@@ -97,20 +97,21 @@ export default function AICoachPage() {
         </div>
 
         {/* Input bar */}
-        <div className="flex items-end gap-2 px-4 py-3 border-t border-slate-100">
+        <div className="flex items-end gap-3 px-5 py-4 border-t border-slate-100">
           <textarea
             disabled
             placeholder="Ask Alan AI…"
             title="Coming soon"
             rows={1}
-            className="flex-1 text-sm placeholder-slate-400 resize-none outline-none bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 cursor-not-allowed opacity-60"
+            className="flex-1 text-sm placeholder-slate-400 resize-none outline-none bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 cursor-not-allowed opacity-60"
           />
+          {/* 44×44 touch target */}
           <button
             type="button"
             disabled
-            className="w-9 h-9 flex items-center justify-center bg-slate-100 text-slate-400 rounded-xl cursor-not-allowed shrink-0"
+            className="w-11 h-11 flex items-center justify-center bg-slate-100 text-slate-400 rounded-xl cursor-not-allowed shrink-0"
           >
-            <Send size={15} strokeWidth={1.75} aria-hidden="true" />
+            <Send size={16} strokeWidth={1.75} aria-hidden="true" />
           </button>
         </div>
       </div>
