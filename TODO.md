@@ -1,5 +1,39 @@
 # Alan Studio — Feature TODO
 
+## Hosting
+
+Vercel serves the static Vite frontend only. Hobby plan is fine technically; upgrade to Pro only when the platform goes commercial. All AI and backend logic runs in Supabase Edge Functions — never in Vercel Edge Functions or Vercel serverless functions.
+
+---
+
+## AI Architecture — The Alan Brain
+
+All AI features route through a single orchestrator Supabase Edge Function (Deno, Anthropic TS SDK). This is the canonical description of how Alan thinks and responds.
+
+### Request shape
+The client sends only `{ conversationId, newMessage }`. The Edge Function owns the rest: fetching history, building context, calling Claude, and persisting the response.
+
+### System prompt — two layers
+- **Static layer** — Alan's voice, coaching philosophy, and style. Alan authors this; it never changes per-request.
+- **Dynamic layer** — injected per-call from Supabase: user name, goal, current project, experience level, recent lesson activity, streak data.
+
+### Conversation history
+History lives in Supabase (`ai_messages`), not on the client. The Edge Function fetches the last N messages before each call (start at 20; tune later). This is the rolling context window.
+
+### AI evolution roadmap
+- **Phase 1 (now):** Prompt engineering only — no tool calls. Get the persona right.
+- **Phase 2:** Add tool calls: `generate_drill`, `review_progress`, `summarize_media`.
+- **Phase 3:** Multi-agent routing if complexity warrants it.
+- **Future placeholder:** Knowledge base — Alan's methodology docs and course content indexed for retrieval. Not in scope yet.
+
+### Model
+All AI is powered by Claude (`claude-sonnet-4-6`) via the Anthropic TypeScript SDK running inside Supabase Edge Functions (Deno runtime).
+
+### Dependency flag
+Phase 3 dynamic context is partially blocked by Phase 6 onboarding — user goal and persona data doesn't exist until onboarding is built. **Workaround for early testing:** manually seed a test profile row in Supabase with goal, experience level, and project fields.
+
+---
+
 ## Phase 1 · Dashboard — Make It Live
 
 **Goal:** Real data, real feel. No more dashes.
@@ -63,16 +97,23 @@
 **Goal:** Claude-powered chat that feels like a real coaching session.
 
 ### Backend / Edge Functions
-- [ ] Supabase Edge Function `ai-coach-chat` — receives `{ messages, userId }`,
-      calls Anthropic API (Claude claude-sonnet-4-6), streams the response back
-- [ ] System prompt — define Alan's coaching persona, context window includes user
-      profile + recent activity summary
+- [ ] Supabase Edge Function (Deno, Anthropic TS SDK) `ai-coach-chat` — receives
+      `{ conversationId, newMessage }`; fetches conversation history and dynamic
+      user context from Supabase; builds the two-layer system prompt (static
+      persona + dynamic context); calls Claude (`claude-sonnet-4-6`) and streams
+      the response back; persists the assistant turn to `ai_messages`
+- [ ] System prompt (static layer) — Alan authors the voice, coaching philosophy,
+      and style; stored in the Edge Function, never changes per-request
+- [ ] System prompt (dynamic layer) — injected per-call: user name, goal, project,
+      experience level, recent lesson activity, streak data (see AI Architecture
+      section above)
 - [ ] `ai_conversations` table — id, user_id, created_at, title (auto-generated)
 - [ ] `ai_messages` table — id, conversation_id, role (user|assistant), content,
       created_at
 - [ ] Persist each message after send/receive
-- [ ] Optional: Supabase Edge Function `summarize-conversation` — generates a short
-      title from the first exchange (for conversation history list)
+- [ ] Optional: Supabase Edge Function (Deno, Anthropic TS SDK)
+      `summarize-conversation` — generates a short title from the first exchange
+      (for conversation history list)
 
 ### UI
 - [ ] `/ai-coach` — landing: conversation history list in a left rail +
@@ -285,8 +326,8 @@ signals into actionable coaching language.
       audio/ogg; path: `{user_id}/{submission_id}.{ext}`
 
 ### Backend / Edge Functions
-- [ ] `process-media` Edge Function — triggered by a Supabase Storage webhook on
-      new upload; orchestrates:
+- [ ] `process-media` Supabase Edge Function (Deno, Anthropic TS SDK) — triggered
+      by a Supabase Storage webhook on new upload; orchestrates:
   1. Update `media_submissions.status` to `processing`
   2. Call Yoodli API with the media URL (or upload); await result
   3. If Yoodli unavailable, fall back to Deepgram/Whisper for transcript
@@ -294,9 +335,9 @@ signals into actionable coaching language.
   5. Call Claude with transcript + metrics to generate `coaching_summary`
   6. Update `media_submissions.status` to `ready` (or `failed` with error)
   7. Send Supabase Realtime event so the UI updates without polling
-- [ ] `get-analysis-report` Edge Function — formats raw `analysis_json` into a
-      normalised report shape regardless of which provider produced it; allows
-      the UI to stay provider-agnostic
+- [ ] `get-analysis-report` Supabase Edge Function (Deno, Anthropic TS SDK) —
+      formats raw `analysis_json` into a normalised report shape regardless of
+      which provider produced it; allows the UI to stay provider-agnostic
 - [ ] Yoodli API client module — encapsulates auth, upload, polling/webhook, and
       response normalisation; swap provider without touching the Edge Function
       orchestrator
@@ -392,22 +433,24 @@ is proven, to reduce third-party costs at scale.
       writes everything in their sessions; owner reads all
 
 ### Backend / Edge Functions
-- [ ] `create-daily-room` Edge Function — called when coach creates a session;
-      calls Daily.co REST API to provision a private room with recording enabled;
-      stores room name + URL in `coaching_sessions`; sends invite notifications
-      to invited users
-- [ ] `end-daily-room` Edge Function — called when coach ends session; calls
-      Daily.co to close the room; fetches recording URL; triggers
-      `process-session-recording` asynchronously
-- [ ] `process-session-recording` Edge Function — after session ends:
+- [ ] `create-daily-room` Supabase Edge Function (Deno, Anthropic TS SDK) —
+      called when coach creates a session; calls Daily.co REST API to provision
+      a private room with recording enabled; stores room name + URL in
+      `coaching_sessions`; sends invite notifications to invited users
+- [ ] `end-daily-room` Supabase Edge Function (Deno, Anthropic TS SDK) — called
+      when coach ends session; calls Daily.co to close the room; fetches
+      recording URL; triggers `process-session-recording` asynchronously
+- [ ] `process-session-recording` Supabase Edge Function (Deno, Anthropic TS SDK)
+      — after session ends:
   1. Download or reference the Daily.co recording
   2. For each presenter in `session_presentations`, extract their audio segment
   3. Send to Yoodli or Deepgram for full analysis
   4. Generate Claude coaching summary per presenter
   5. Update `session_presentations` with all results
   6. Mark session as `ready` so the recap page activates
-- [ ] `presentation-realtime-hook` Edge Function (or Deepgram streaming client
-      in the browser) — while a student is in Presentation Mode, stream audio to
+- [ ] `presentation-realtime-hook` Supabase Edge Function (Deno, Anthropic TS SDK)
+      (or Deepgram streaming client in the browser) — while a student is in
+      Presentation Mode, stream audio to
       Deepgram; push partial transcripts + rolling metrics to Supabase Realtime
       channel `session:{id}:presenter:{userId}`; coach UI subscribes and shows
       live metrics sidebar
