@@ -1,4 +1,4 @@
-import { Sparkles, Send } from 'lucide-react'
+import { Sparkles, Send, Mic, BarChart2, Repeat2 } from 'lucide-react'
 
 const MESSAGES = [
   {
@@ -20,6 +20,24 @@ const MESSAGES = [
 ]
 
 const PROMPTS = ['Review my last session', 'Give me a drill', 'What should I work on?', 'Help me with nerves']
+
+const CAPABILITIES = [
+  {
+    icon: Mic,
+    title: 'Live practice sessions',
+    description: 'Speak freely and get instant feedback on pacing, filler words, and tone.',
+  },
+  {
+    icon: BarChart2,
+    title: 'Progress analysis',
+    description: "Alan AI tracks your trends across sessions and highlights what's improving.",
+  },
+  {
+    icon: Repeat2,
+    title: 'Technique drills',
+    description: 'Targeted exercises for eye contact, pausing, vocal variety, and more.',
+  },
+]
 
 function AIBubble({ text }) {
   return (
@@ -46,7 +64,7 @@ function UserBubble({ text }) {
 
 export default function AICoachPage() {
   return (
-    <div className="max-w-4xl space-y-6">
+    <div className="max-w-4xl space-y-8">
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold tracking-tight text-slate-900">AI Coach</h2>
@@ -56,7 +74,7 @@ export default function AICoachPage() {
       {/* Chat window */}
       <div className="bg-white border border-slate-100 rounded-2xl shadow-sm flex flex-col overflow-hidden">
 
-        {/* Chat header — min-h-[44px] for the touch zone */}
+        {/* Chat header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
@@ -69,8 +87,15 @@ export default function AICoachPage() {
           </span>
         </div>
 
-        {/* Message thread */}
-        <div className="flex flex-col gap-5 p-5 h-96 overflow-y-auto">
+        {/*
+          Message thread — h-56 keeps the scroll zone compact so the user's
+          thumb can reach the page scroll outside the card. overscroll-behavior-y
+          contains momentum so the thread's boundary doesn't fight the page scroll.
+        */}
+        <div
+          className="flex flex-col gap-5 p-5 h-56 overflow-y-auto"
+          style={{ overscrollBehaviorY: 'contain' }}
+        >
           {MESSAGES.map((msg, i) =>
             msg.role === 'user'
               ? <UserBubble key={i} text={msg.text} />
@@ -105,7 +130,6 @@ export default function AICoachPage() {
             rows={1}
             className="flex-1 text-sm placeholder-slate-400 resize-none outline-none bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 cursor-not-allowed opacity-60"
           />
-          {/* 44×44 touch target */}
           <button
             type="button"
             disabled
@@ -113,6 +137,25 @@ export default function AICoachPage() {
           >
             <Send size={16} strokeWidth={1.75} aria-hidden="true" />
           </button>
+        </div>
+      </div>
+
+      {/* Capabilities — gives the page scrollable length below the chat and
+          shows what Alan AI will do when it ships. */}
+      <div>
+        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">What Alan AI can do</p>
+        <div className="bg-white border border-slate-100 rounded-2xl shadow-sm divide-y divide-slate-100">
+          {CAPABILITIES.map(({ icon: Icon, title, description }) => (
+            <div key={title} className="flex items-start gap-4 px-5 py-4">
+              <div className="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center shrink-0 mt-0.5">
+                <Icon size={16} strokeWidth={1.75} className="text-violet-500" aria-hidden="true" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-900">{title}</p>
+                <p className="text-sm text-slate-500 mt-0.5 leading-relaxed">{description}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
