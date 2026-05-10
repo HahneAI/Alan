@@ -1,100 +1,5 @@
 # Alan Studio — Feature TODO
 
-## Phase 0 · UI Scaffolding
-
-These are visual-only tasks. The goal is to replace empty placeholder pages with
-realistic-looking shells that feel intentional, not unfinished. Each placeholder
-section gets actual layout structure plus a "Coming Soon" badge where the live
-feature isn't ready.
-
-### 0.1 Dashboard
-- [x] Replace `—` stat values with skeleton shimmer loaders (animate-pulse bars)
-- [x] Add a "streak" stat card: flame icon, number, "day streak" label
-- [x] Add a hero "resume" banner — large card with the in-progress lesson title, a
-      progress bar (visual only, static for now), and a "Continue" button
-- [x] Add a "Recent activity" section: list of 3–4 placeholder rows (icon + label +
-      relative time) with skeleton shimmer while loading
-
-### 0.2 Lessons
-- [x] Replace the blank card with a proper course-catalog shell:
-  - Section header "Your courses" with a course-count badge
-  - 3–4 mock course cards each with: cover gradient, title, "X of Y lessons",
-    progress bar, and a "Coming Soon" pill badge overlaid on locked cards
-  - A "New" badge on one card for visual variety
-- [x] Add a tab row: "All · In Progress · Completed" (static, no filtering yet)
-- [x] Sidebar or top filter chips: topics or difficulty (static)
-
-### 0.3 Community
-- [x] Replace the blank card with a feed shell:
-  - Compose box at the top (disabled input, "Coming Soon" tooltip on focus)
-  - 3–4 mock post cards: avatar initial, name, relative timestamp, body text,
-    like/comment counts — all hardcoded
-  - A "Members online" sidebar chip (static number)
-- [x] "Coming Soon" banner across the compose box and post interactions
-
-### 0.4 AI Coach
-- [x] Replace the blank card with a chat-UI shell:
-  - Message thread area with 2–3 hardcoded example exchanges (user bubble +
-    Alan AI bubble) to show the conversation pattern
-  - Disabled input bar at the bottom with placeholder "Ask Alan AI…"
-  - "Coming Soon" pill badge in the top-right of the chat window
-  - Suggested-prompt chips below the input (disabled): e.g. "Review my last
-    session", "Give me a drill", "What should I work on today?"
-
-### 0.5 Messages
-- [x] Add `/messages` to sidebar nav with a hardcoded unread badge (`3`) to show
-      the pattern
-- [x] Shell layout: two-panel side-by-side on desktop, single-panel (list) on mobile
-  - Left rail: 3–4 hardcoded conversation rows — avatar initial, name, last
-    message preview (truncated), relative timestamp, unread dot on one row
-  - Right panel: "Select a conversation to start reading" empty state with a
-    faded envelope icon
-- [x] "New Message" button in the rail header — disabled, "Coming Soon" tooltip
-- [x] "Coming Soon" banner pinned above the conversation list
-
-### 0.6 Admin Panel
-- [x] Add `/admin` route — only renders for `is_owner` or `is_admin`; all other
-      users are silently redirected to `/dashboard`
-- [x] Sidebar: admin link appears at the bottom of the nav (above Settings) only
-      when the current user has an admin or owner role; shield icon; no "Coming
-      Soon" badge (it either shows or it doesn't)
-- [x] `/admin` shell — horizontal sub-nav tabs: Users · Courses · Community · Stats
-- [x] **Users tab** — searchable table shell:
-  - Hardcoded 4–5 rows: avatar initial, full name, email, role badges (Student /
-    Coach / Admin chips), joined date, a "Edit" icon button
-  - Search input at the top (static, no filtering yet)
-  - Pagination row at the bottom (Previous / 1 / Next — disabled)
-- [x] **Users · Edit drawer** — slide-in panel (or modal) with placeholder fields:
-  display name, email (read-only), role toggle switches (`is_coach`, `is_admin`),
-  DM permission toggle (`dm_enabled`); all controls disabled with "Coming Soon"
-  tooltip; "Save" button present but inert
-- [x] **Courses tab** — placeholder list:
-  - 2–3 hardcoded course rows: title, lesson count, "Published" green dot or
-    "Draft" grey dot, a drag-handle icon, an "Edit" icon button
-  - "New Course" button — disabled, "Coming Soon" tooltip
-- [x] **Community tab** — placeholder moderation queue:
-  - Empty state card: "No flagged posts" with a checkmark icon
-  - Note below: "Reported posts from students will appear here"
-- [x] **Stats tab** — platform metric cards shell:
-  - 4 cards: Total Students, Lessons Completed This Week, AI Conversations,
-    New Signups — all showing `—` with the same shimmer skeleton pattern as the
-    Dashboard stats
-
-### 0.7 Sidebar & Global Chrome
-- [x] Add "Coming Soon" dot badges next to Lessons, Community, AI Coach, and
-      Messages in the sidebar nav — remove each dot as the feature ships
-- [x] Show the user's avatar image (from Settings → Profile upload) in the sidebar
-      user strip when one exists; fall back to initials when not set
-- [x] Mobile bottom tab bar — fixed to the bottom of the screen on viewports below
-      1024 px; tabs: Dashboard, Lessons, AI Coach, Community, Messages; active tab
-      highlighted; replaces the hamburger slide-in on mobile (slide-in remains for
-      Settings and Admin access)
-- [x] Notification bell icon in the sidebar footer (above the user strip) —
-      hardcoded red dot badge; opens an empty "No notifications yet" dropdown panel;
-      "Coming Soon" label inside the panel
-
----
-
 ## Phase 1 · Dashboard — Make It Live
 
 **Goal:** Real data, real feel. No more dashes.
@@ -582,3 +487,20 @@ is proven, to reduce third-party costs at scale.
 - [ ] Coach view — coaches see only sessions they host; same list but scoped
 - [ ] Session cancel action — soft-cancel (`is_cancelled = true`) + sends
       cancellation notification to all invited participants
+
+---
+
+---
+
+## Phase 0 · UI Scaffolding ✓ Complete
+
+All visual shells are shipped. Each entry below is a reference only — the code
+location is the source of truth.
+
+- **0.1 Dashboard** — streak card, resume banner, shimmer stat cards, activity feed → `src/pages/DashboardPage.jsx`
+- **0.2 Lessons** — course-catalog grid, gradient covers, tab row (All/In Progress/Completed), filter chips, locked-card overlays → `src/pages/LessonsPage.jsx`
+- **0.3 Community** — mock post feed, disabled compose box, "members online" badge, coming-soon banner → `src/pages/CommunityPage.jsx`
+- **0.4 AI Coach** — chat shell with example exchanges, disabled prompt chips, disabled input bar → `src/pages/AICoachPage.jsx`
+- **0.5 Messages** — two-panel shell (conversation list + empty-state right panel), coming-soon banner → `src/pages/MessagesPage.jsx`
+- **0.6 Admin Panel** — `is_admin`-gated `/admin` route, 4-tab shell (Users/Courses/Community/Stats), edit drawer, mock user table → `src/pages/AdminPage.jsx`, `src/App.jsx`
+- **0.7 Sidebar & Chrome** — coming-soon dots, avatar image in user strip, notification bell + dropdown, mobile bottom tab bar, Dynamic Island / safe-area support → `src/components/Sidebar.jsx`, `src/components/BottomTabBar.jsx`, `src/components/TopBar.jsx`, `src/layouts/AppLayout.jsx`, `src/index.css`
