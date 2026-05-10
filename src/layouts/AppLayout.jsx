@@ -37,7 +37,7 @@ export default function AppLayout() {
           so content is never hidden behind the BottomTabBar or home indicator.
           At lg+ the tab bar is gone so only the design padding + safe area applies.
         */}
-        <main className="flex-1 overflow-y-auto p-6 sm:p-8 lg:p-10 page-pb-safe">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain p-6 sm:p-8 lg:p-10 page-pb-safe">
           <Outlet />
         </main>
       </div>
